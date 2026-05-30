@@ -1,0 +1,208 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Sniper Bottle Hunter - Prashant</title>
+
+<style>
+*{
+    margin:0;
+    padding:0;
+    box-sizing:border-box;
+    cursor:none;
+}
+
+body{
+    overflow:hidden;
+    background:linear-gradient(to top,#1b4332,#40916c,#95d5b2);
+    height:100vh;
+    font-family:Arial,sans-serif;
+}
+
+#hud{
+    position:fixed;
+    top:15px;
+    left:15px;
+    color:white;
+    font-size:24px;
+    font-weight:bold;
+    text-shadow:2px 2px 5px black;
+}
+
+#scope{
+    position:fixed;
+    width:80px;
+    height:80px;
+    border:3px solid red;
+    border-radius:50%;
+    pointer-events:none;
+    transform:translate(-50%,-50%);
+    z-index:999;
+}
+
+#scope::before,
+#scope::after{
+    content:'';
+    position:absolute;
+    background:red;
+}
+
+#scope::before{
+    width:2px;
+    height:80px;
+    left:50%;
+    transform:translateX(-50%);
+}
+
+#scope::after{
+    height:2px;
+    width:80px;
+    top:50%;
+    transform:translateY(-50%);
+}
+
+.bottle{
+    position:absolute;
+    font-size:70px;
+    animation:float 3s infinite alternate ease-in-out;
+    user-select:none;
+}
+
+@keyframes float{
+    from{transform:translateY(0);}
+    to{transform:translateY(-30px);}
+}
+
+.break{
+    animation:explode .5s forwards;
+}
+
+@keyframes explode{
+    100%{
+        transform:scale(2) rotate(360deg);
+        opacity:0;
+    }
+}
+
+#startScreen,#gameOver{
+    position:absolute;
+    width:100%;
+    height:100%;
+    background:rgba(0,0,0,.8);
+    display:flex;
+    flex-direction:column;
+    justify-content:center;
+    align-items:center;
+    color:white;
+    z-index:1000;
+}
+
+button{
+    padding:15px 30px;
+    font-size:20px;
+    border:none;
+    border-radius:10px;
+    margin-top:20px;
+    cursor:pointer;
+}
+
+#gameOver{
+    display:none;
+}
+</style>
+</head>
+<body>
+
+<div id="startScreen">
+    <h1>🎯 SNIPER BOTTLE HUNTER</h1>
+    <p>Made By Prashant Yadav 🚀</p>
+    <button onclick="startGame()">START GAME</button>
+</div>
+
+<div id="gameOver">
+    <h1>GAME OVER</h1>
+    <h2 id="finalScore"></h2>
+    <button onclick="location.reload()">PLAY AGAIN</button>
+</div>
+
+<div id="hud">
+    Score: <span id="score">0</span>
+    &nbsp;&nbsp; Time: <span id="time">60</span>
+</div>
+
+<div id="scope"></div>
+
+<script>
+const scope = document.getElementById("scope");
+const scoreEl = document.getElementById("score");
+const timeEl = document.getElementById("time");
+
+let score = 0;
+let time = 60;
+let gameRunning = false;
+
+document.addEventListener("mousemove", e=>{
+    scope.style.left = e.clientX + "px";
+    scope.style.top = e.clientY + "px";
+});
+
+function createBottle(){
+    if(!gameRunning) return;
+
+    const bottle = document.createElement("div");
+    bottle.className = "bottle";
+    bottle.innerHTML = "🍾";
+
+    bottle.style.left =
+      Math.random()*(window.innerWidth-100)+"px";
+
+    bottle.style.top =
+      Math.random()*(window.innerHeight-150)+"px";
+
+    bottle.onclick = ()=>{
+        score += 10;
+        scoreEl.innerText = score;
+
+        bottle.classList.add("break");
+
+        setTimeout(()=>{
+            bottle.remove();
+        },500);
+    };
+
+    document.body.appendChild(bottle);
+
+    setTimeout(()=>{
+        bottle.remove();
+    },4000);
+}
+
+function startGame(){
+
+    document.getElementById("startScreen").style.display="none";
+
+    gameRunning = true;
+
+    setInterval(createBottle,700);
+
+    const timer = setInterval(()=>{
+
+        time--;
+        timeEl.innerText = time;
+
+        if(time<=0){
+            clearInterval(timer);
+            gameRunning=false;
+
+            document.getElementById("gameOver").style.display="flex";
+            document.getElementById("finalScore").innerText =
+            "Final Score: " + score;
+        }
+
+    },1000);
+}
+</script>
+
+</body>
+</html>
