@@ -137,6 +137,9 @@ button{
 const scope = document.getElementById("scope");
 const scoreEl = document.getElementById("score");
 const timeEl = document.getElementById("time");
+// Sounds
+const gunSound = new Audio("gunshot.mp3");
+const breakSound = new Audio("glass-break.mp3");
 
 let score = 0;
 let time = 60;
@@ -161,15 +164,37 @@ function createBottle(){
       Math.random()*(window.innerHeight-150)+"px";
 
     bottle.onclick = ()=>{
-        score += 10;
-        scoreEl.innerText = score;
 
-        bottle.classList.add("break");
+    score += 10;
+    scoreEl.innerText = score;
 
-        setTimeout(()=>{
-            bottle.remove();
-        },500);
-    };
+    // Gunshot Sound
+    gunSound.currentTime = 0;
+    gunSound.play();
+
+    // Glass Break Sound
+    setTimeout(()=>{
+        breakSound.currentTime = 0;
+        breakSound.play();
+    },100);
+
+    bottle.classList.add("break");
+
+    // Screen Shake Effect
+    document.body.animate([
+        {transform:'translateX(8px)'},
+        {transform:'translateX(-8px)'},
+        {transform:'translateX(4px)'},
+        {transform:'translateX(0px)'}
+    ],{
+        duration:150
+    });
+
+    setTimeout(()=>{
+        bottle.remove();
+    },500);
+};
+    
 
     document.body.appendChild(bottle);
 
